@@ -3,7 +3,15 @@
 A web application for learning and practicing Burmese keyboard typing skills.
 
 ![Login Page](screenshot-login.png)
-![Practice Page](screenshot-tutor.png)
+
+## Tech Stack
+
+![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
+![Flask](https://img.shields.io/badge/Flask-000000?style=for-the-badge&logo=flask&logoColor=white)
+![SQLite](https://img.shields.io/badge/SQLite-003B57?style=for-the-badge&logo=sqlite&logoColor=white)
+![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white)
+![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white)
+![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)
 
 ## Features
 
@@ -22,28 +30,33 @@ A web application for learning and practicing Burmese keyboard typing skills.
 ## Installation
 
 1. Clone the repository:
+
 ```bash
 git clone <repository-url>
 cd burmese-typing-tutor
 ```
 
 2. Create a virtual environment:
+
 ```bash
 python -m venv venv
 source venv/bin/activate  # On Windows: venv\Scripts\activate
 ```
 
 3. Install dependencies:
+
 ```bash
 pip install -r requirements.txt
 ```
 
 4. Run the application:
+
 ```bash
 python app.py
 ```
 
 5. Open your browser and navigate to:
+
 ```
 http://localhost:5001
 ```
@@ -59,6 +72,7 @@ http://localhost:5001
 ## How to Type Burmese
 
 To type Burmese characters:
+
 - **Mac**: System Settings → Keyboard → Input Sources → Add Burmese
 - **Windows**: Settings → Time & Language → Language → Add Burmese
 
@@ -86,21 +100,22 @@ burmese-typing-tutor/
 
 ## API Endpoints
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/` | Welcome page |
-| POST | `/api/register` | Register new user |
-| POST | `/api/login` | Login existing user |
-| GET | `/tutor` | Practice interface |
-| GET | `/api/user` | Get current user data |
-| GET | `/api/tutorials` | Get all tutorials |
-| GET | `/api/tutorial/<level>` | Get specific tutorial |
-| POST | `/api/submit-score` | Submit practice score |
-| GET | `/api/leaderboard` | Get top users |
+| Method | Endpoint                  | Description           |
+| ------ | ------------------------- | --------------------- |
+| GET    | `/`                     | Welcome page          |
+| POST   | `/api/register`         | Register new user     |
+| POST   | `/api/login`            | Login existing user   |
+| GET    | `/tutor`                | Practice interface    |
+| GET    | `/api/user`             | Get current user data |
+| GET    | `/api/tutorials`        | Get all tutorials     |
+| GET    | `/api/tutorial/<level>` | Get specific tutorial |
+| POST   | `/api/submit-score`     | Submit practice score |
+| GET    | `/api/leaderboard`      | Get top users         |
 
 ## Database Tables
 
 ### Users
+
 - `id` - Primary key
 - `name` (unique) - User's name
 - `current_level` - Current unlocked level
@@ -109,6 +124,7 @@ burmese-typing-tutor/
 - `scores` - JSON array of score records
 
 ### Tutorials
+
 - `id` - Primary key
 - `level` (unique) - Level number
 - `title` - Level title in Burmese
