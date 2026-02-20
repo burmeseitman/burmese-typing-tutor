@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="my">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Burmese Typing Tutor</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>မြန်မာလက်ကွက်လေ့ကျင့်ရေး</h1>
+            <p>Burmese Typing Tutor</p>
+        </header>
+
+        <main class="welcome-section">
+            <div class="welcome-card">
+                <h2>ကျေးဇူးပြု၍ အမည်ထည့်ပါ</h2>
+                <p>Please enter your name to begin</p>
+                
+                <form id="nameForm">
+                    <div class="form-group">
+                        <input type="text" id="userName" placeholder="Your name..." maxlength="50" required>
+                    </div>
+                    <div id="errorMessage" class="error-message"></div>
+                    <div id="suggestions" class="suggestions"></div>
+                    <button type="submit" class="btn-primary">စတင်ပါ / Start</button>
+                </form>
+
+                <div class="divider">
+                    <span>or</span>
+                </div>
+
+                <p class="returning-user">Returning user? Just enter your name above.</p>
+            </div>
+
+            <div class="leaderboard-preview">
+                <h3>ထိပ်တန်းအမှတ်များ / Top Scores</h3>
+                <div id="leaderboardList" class="leaderboard-list">
+                    <p class="loading">Loading...</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        document.getElementById('nameForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const name = document.getElementById('userName').value.trim();
+            const errorDiv = document.getElementById('errorMessage');
+            const suggestionsDiv = document.getElementById('suggestions');
+            
+            errorDiv.textContent = '';
+            suggestionsDiv.innerHTML = '';
+
+            try {
+                const response = await fetch('/api/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    window.location.href = '/tutor';
+                } else if (response.status === 409) {
+                    if (data.similar_names && data.similar_names.length > 0) {
+                        errorDiv.textContent = 'ဤအမည်ရှိပြီးသားဖြစ်ပါသည်။ ဤအမည်များကို စစ်ဆေးပါ။';
+                        suggestionsDiv.innerHTML = `
+                            <p>Similar names: ${data.similar_names.join(', ')}</p>
+                            <p>Suggested: <strong>${data.suggested_name}</strong></p>
+                            <button type="button" class="btn-suggestion" onclick="useSuggestion('${data.suggested_name}')">
+                                Use "${data.suggested_name}"
+                            </button>
+                        `;
+                    } else {
+                        errorDiv.textContent = 'Name already exists. Try: ' + data.suggested_name;
+                    }
+                } else {
+                    errorDiv.textContent = data.error || 'An error occurred';
+                }
+            } catch (err) {
+                errorDiv.textContent = 'Connection error. Please try again.';
+            }
+        });
+
+        function useSuggestion(name) {
+            document.getElementById('userName').value = name;
+            document.getElementById('suggestions').innerHTML = '';
+        }
+
+        async function loadLeaderboard() {
+            try {
+                const response = await fetch('/api/leaderboard');
+                const data = await response.json();
+                
+                const list = document.getElementById('leaderboardList');
+                if (data.success && data.leaderboard.length > 0) {
+                    list.innerHTML = data.leaderboard.map((user, index) => `
+                        <div class="leaderboard-item ${index < 3 ? 'top-three' : ''}">
+                            <span class="rank">${index + 1}</span>
+                            <span class="name">${user.name}</span>
+                            <span class="score">${user.total_score || 0}</span>
+                        </div>
+                    `).join('');
+                } else {
+                    list.innerHTML = '<p class="no-data">No scores yet. Be the first!</p>';
+                }
+            } catch (err) {
+                document.getElementById('leaderboardList').innerHTML = '<p class="error">Failed to load leaderboard</p>';
+            }
+        }
+
+        loadLeaderboard();
+    </script>
+</body>
+</html>

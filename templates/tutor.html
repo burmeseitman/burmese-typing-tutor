@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="my">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Burmese Typing Tutor - Practice</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <div class="tutor-container">
+        <header class="tutor-header">
+            <div class="user-info">
+                <span id="userName">{{ user_name }}</span>
+                <span class="level-badge">Level: <span id="currentLevel">1</span></span>
+            </div>
+            <div class="score-info">
+                <span>Total Score: <span id="totalScore">0</span></span>
+            </div>
+            <button id="logoutBtn" class="btn-logout" onclick="logout()">Logout</button>
+        </header>
+
+        <div class="main-content">
+            <aside class="sidebar">
+                <div class="level-selector">
+                    <h3>အဆင့်များ / Levels</h3>
+                    <div id="levelList"></div>
+                </div>
+
+                <div class="leaderboard">
+                    <h3>ထိပ်တန်းအမှတ်များ</h3>
+                    <div id="leaderboardList"></div>
+                </div>
+            </aside>
+
+            <main class="practice-area">
+                <div class="practice-header">
+                    <h2 id="levelTitle">Level 1</h2>
+                    <p id="levelDescription"></p>
+                </div>
+
+                <div class="stats-bar">
+                    <div class="stat">
+                        <span class="stat-label">WPM</span>
+                        <span id="wpmDisplay" class="stat-value">0</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-label">Accuracy</span>
+                        <span id="accuracyDisplay" class="stat-value">100%</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-label">Time</span>
+                        <span id="timeDisplay" class="stat-value">0:00</span>
+                    </div>
+                </div>
+
+                <div class="text-display-area">
+                    <div id="practiceText" class="practice-text"></div>
+                    <textarea id="inputArea" class="input-area" placeholder="Start typing here..." disabled></textarea>
+                </div>
+
+                <div class="controls">
+                    <button id="startBtn" class="btn-primary">စတင်ပါ / Start</button>
+                    <button id="resetBtn" class="btn-secondary" disabled>ပြန်လည်စတင်ပါ / Reset</button>
+                    <button id="nextLevelBtn" class="btn-success" style="display:none;">Next Level</button>
+                </div>
+
+                <div class="keyboard-container">
+                    <div id="keyboard" class="keyboard"></div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script src="/static/js/keyboard.js"></script>
+    <script src="/static/js/typing.js"></script>
+</body>
+</html>
