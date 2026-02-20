@@ -1,4 +1,5 @@
 import os
+import secrets
 from flask import Flask, render_template, request, jsonify, session
 from models import (
     init_db,
@@ -14,7 +15,7 @@ from models import (
 )
 
 app = Flask(__name__)
-app.secret_key = "dev-secret-key-change-in-production"
+app.secret_key = os.environ.get("SECRET_KEY", secrets.token_hex(32))
 
 init_db()
 
