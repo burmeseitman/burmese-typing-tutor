@@ -8,6 +8,11 @@ let correctKeystrokes = 0;
 let isPracticeRunning = false;
 let userData = null;
 
+function toMyanmarNumber(num) {
+    const myanmarDigits = ['၀', '၁', '၂', '၃', '၄', '၅', '၆', '၇', '၈', '၉'];
+    return String(num).split('').map(d => myanmarDigits[parseInt(d)] || d).join('');
+}
+
 async function init() {
     createKeyboard();
     await loadUserData();
@@ -23,8 +28,8 @@ async function loadUserData() {
         if (data.success) {
             userData = data;
             document.getElementById('userName').textContent = data.name;
-            document.getElementById('currentLevel').textContent = data.current_level;
-            document.getElementById('totalScore').textContent = data.total_score || 0;
+            document.getElementById('currentLevel').textContent = toMyanmarNumber(data.current_level);
+            document.getElementById('totalScore').textContent = toMyanmarNumber(data.total_score || 0);
             currentLevel = data.current_level;
         } else {
             window.location.href = '/';
@@ -61,7 +66,7 @@ function renderLevelList(tutorials) {
             <div class="level-item ${isCompleted ? 'completed' : ''} ${isLocked ? 'locked' : ''} ${tutorial.level === currentLevel ? 'active' : ''}"
                  data-level="${tutorial.level}"
                  onclick="${isAccessible ? `selectLevel(${tutorial.level})` : ''}">
-                <span class="level-num">${tutorial.level}</span>
+                <span class="level-num">${toMyanmarNumber(tutorial.level)}</span>
                 <span class="level-title">${tutorial.title}</span>
                 ${isCompleted ? '✓' : ''}
                 ${isLocked ? '🔒' : ''}
@@ -72,12 +77,12 @@ function renderLevelList(tutorials) {
 
 async function selectLevel(level) {
     if (level > currentLevel) {
-        alert('Complete previous levels first!');
+        alert('ယခင်အဆင့်များကို ပြီးမြောက်ပါ!');
         return;
     }
     
     currentLevel = level;
-    document.getElementById('currentLevel').textContent = level;
+    document.getElementById('currentLevel').textContent = toMyanmarNumber(level);
     
     document.querySelectorAll('.level-item').forEach(item => {
         item.classList.remove('active');
@@ -91,7 +96,7 @@ async function selectLevel(level) {
         const data = await response.json();
         if (data.success) {
             const tutorial = data.tutorial;
-            document.getElementById('levelTitle').textContent = `Level ${tutorial.level}: ${tutorial.title}`;
+            document.getElementById('levelTitle').textContent = `အဆင့် ${toMyanmarNumber(tutorial.level)} - ${tutorial.title}`;
             document.getElementById('levelDescription').textContent = tutorial.description;
             practiceTexts = tutorial.practice_texts;
             currentTextIndex = 0;
@@ -158,9 +163,9 @@ function resetPractice() {
     document.getElementById('startBtn').disabled = false;
     document.getElementById('resetBtn').disabled = true;
     document.getElementById('nextLevelBtn').style.display = 'none';
-    document.getElementById('wpmDisplay').textContent = '0';
-    document.getElementById('accuracyDisplay').textContent = '100%';
-    document.getElementById('timeDisplay').textContent = '0:00';
+    document.getElementById('wpmDisplay').textContent = '၀';
+    document.getElementById('accuracyDisplay').textContent = '၁၀၀%';
+    document.getElementById('timeDisplay').textContent = '၀:၀၀';
     
     displayPracticeText();
 }
@@ -212,12 +217,12 @@ function calculateStats(inputText, targetText) {
     correctKeystrokes = correct;
     
     const accuracy = totalKeystrokes > 0 ? Math.round((correctKeystrokes / totalKeystrokes) * 100) : 100;
-    document.getElementById('accuracyDisplay').textContent = accuracy + '%';
+    document.getElementById('accuracyDisplay').textContent = toMyanmarNumber(accuracy) + '%';
     
     const timeElapsed = (new Date() - startTime) / 1000 / 60;
     const words = inputText.length / 5;
     const wpm = timeElapsed > 0 ? Math.round(words / timeElapsed) : 0;
-    document.getElementById('wpmDisplay').textContent = wpm;
+    document.getElementById('wpmDisplay').textContent = toMyanmarNumber(wpm);
 }
 
 function updateTimer() {
@@ -226,7 +231,7 @@ function updateTimer() {
     const elapsed = Math.floor((new Date() - startTime) / 1000);
     const minutes = Math.floor(elapsed / 60);
     const seconds = elapsed % 60;
-    document.getElementById('timeDisplay').textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+    document.getElementById('timeDisplay').textContent = `${toMyanmarNumber(minutes)}:${toMyanmarNumber(seconds.toString().padStart(2, '0'))}`;
 }
 
 async function finishPractice(inputText, targetText) {
@@ -283,15 +288,15 @@ function showResult(wpm, accuracy, score) {
     const practiceTextDiv = document.getElementById('practiceText');
     practiceTextDiv.innerHTML = `
         <div style="text-align: center; padding: 20px;">
-            <h3 style="color: #27ae60; margin-bottom: 15px;">Practice Complete!</h3>
-            <p>WPM: ${wpm}</p>
-            <p>Accuracy: ${accuracy}%</p>
-            <p style="font-size: 1.5rem; font-weight: bold; color: #3498db;">Score: ${score}</p>
+            <h3 style="color: #27ae60; margin-bottom: 15px;">လေ့ကျင့်ခန်း ပြီးမြောက်ပါပြီ!</h3>
+            <p>မှတ်ရန်မိနစ် - ${toMyanmarNumber(wpm)}</p>
+            <p>တိကျမှု - ${toMyanmarNumber(accuracy)}%</p>
+            <p style="font-size: 1.5rem; font-weight: bold; color: #3498db;">အမှတ် - ${toMyanmarNumber(score)}</p>
         </div>
     `;
     
-    const totalScore = parseInt(document.getElementById('totalScore').textContent) + score;
-    document.getElementById('totalScore').textContent = totalScore;
+    const totalScore = parseInt(document.getElementById('totalScore').textContent.replace(/[၀-၉]/g, d => '၀၁၂၃၄၅၆၇၈၉'.indexOf(d))) + score;
+    document.getElementById('totalScore').textContent = toMyanmarNumber(totalScore);
 }
 
 function goToNextLevel() {
@@ -307,13 +312,13 @@ async function loadLeaderboard() {
         if (data.success && data.leaderboard.length > 0) {
             list.innerHTML = data.leaderboard.map((user, index) => `
                 <div class="leaderboard-item ${index < 3 ? 'top-three' : ''} ${user.name === userData?.name ? 'current-user' : ''}">
-                    <span class="rank">${index + 1}</span>
+                    <span class="rank">${toMyanmarNumber(index + 1)}</span>
                     <span class="name">${user.name}</span>
-                    <span class="score">${user.total_score || 0}</span>
+                    <span class="score">${toMyanmarNumber(user.total_score || 0)}</span>
                 </div>
             `).join('');
         } else {
-            list.innerHTML = '<p class="no-data">No scores yet</p>';
+            list.innerHTML = '<p class="no-data">အမှတ်များ မရှိသေးပါ</p>';
         }
     } catch (err) {
         console.error('Failed to load leaderboard:', err);

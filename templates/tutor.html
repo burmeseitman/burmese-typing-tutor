@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Burmese Typing Tutor - Practice</title>
+    <title>မြန်မာလက်ကွက် လေ့ကျင့်ရေးကွင်း - လေ့ကျင့်ခန်း</title>
     <link rel="stylesheet" href="/static/css/style.css">
 </head>
 <body>
@@ -11,18 +11,18 @@
         <header class="tutor-header">
             <div class="user-info">
                 <span id="userName">{{ user_name }}</span>
-                <span class="level-badge">Level: <span id="currentLevel">1</span></span>
+                <span class="level-badge">အဆင့် - <span id="currentLevel">၁</span></span>
             </div>
             <div class="score-info">
-                <span>Total Score: <span id="totalScore">0</span></span>
+                <span>စုစုပေါင်းအမှတ် - <span id="totalScore">၀</span></span>
             </div>
-            <button id="logoutBtn" class="btn-logout" onclick="logout()">Logout</button>
+            <button id="logoutBtn" class="btn-logout" onclick="logout()">ထွက်ရန်</button>
         </header>
 
         <div class="main-content">
             <aside class="sidebar">
                 <div class="level-selector">
-                    <h3>အဆင့်များ / Levels</h3>
+                    <h3>အဆင့်များ</h3>
                     <div id="levelList"></div>
                 </div>
 
@@ -34,34 +34,35 @@
 
             <main class="practice-area">
                 <div class="practice-header">
-                    <h2 id="levelTitle">Level 1</h2>
+                    <h2 id="levelTitle">အဆင့် ၁</h2>
                     <p id="levelDescription"></p>
                 </div>
 
                 <div class="stats-bar">
                     <div class="stat">
-                        <span class="stat-label">WPM</span>
-                        <span id="wpmDisplay" class="stat-value">0</span>
+                        <span class="stat-label">မှတ်ရန်မိနစ်</span>
+                        <span id="wpmDisplay" class="stat-value">၀</span>
                     </div>
                     <div class="stat">
-                        <span class="stat-label">Accuracy</span>
-                        <span id="accuracyDisplay" class="stat-value">100%</span>
+                        <span class="stat-label">တိကျမှု</span>
+                        <span id="accuracyDisplay" class="stat-value">၁၀၀%</span>
                     </div>
                     <div class="stat">
-                        <span class="stat-label">Time</span>
-                        <span id="timeDisplay" class="stat-value">0:00</span>
+                        <span class="stat-label">အချိန်</span>
+                        <span id="timeDisplay" class="stat-value">၀:၀၀</span>
                     </div>
                 </div>
 
                 <div class="text-display-area">
                     <div id="practiceText" class="practice-text"></div>
-                    <textarea id="inputArea" class="input-area" placeholder="Start typing here..." disabled></textarea>
+                    <textarea id="inputArea" class="input-area" placeholder="ဤနေရာတွင် စတင်ရိုက်ပါ..." disabled lang="my"></textarea>
+                    <p class="input-hint">💡 မြန်မာစာရိုက်ရန် သင့်ကွန်ပြူတာတွင် မြန်မာကီးဘုတ်အုပ်ဖွင့်ပါ။ (Enable Burmese keyboard on your computer to type)</p>
                 </div>
 
                 <div class="controls">
-                    <button id="startBtn" class="btn-primary">စတင်ပါ / Start</button>
-                    <button id="resetBtn" class="btn-secondary" disabled>ပြန်လည်စတင်ပါ / Reset</button>
-                    <button id="nextLevelBtn" class="btn-success" style="display:none;">Next Level</button>
+                    <button id="startBtn" class="btn-primary">စတင်ပါ</button>
+                    <button id="resetBtn" class="btn-secondary" disabled>ပြန်လည်စတင်ပါ</button>
+                    <button id="nextLevelBtn" class="btn-success" style="display:none;">နောက်အဆင့်</button>
                 </div>
 
                 <div class="keyboard-container">
