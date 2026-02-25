@@ -65,7 +65,7 @@ function renderLevelList(tutorials) {
         return `
             <div class="level-item ${isCompleted ? 'completed' : ''} ${isLocked ? 'locked' : ''} ${tutorial.level === currentLevel ? 'active' : ''}"
                  data-level="${tutorial.level}"
-                 onclick="${isAccessible ? `selectLevel(${tutorial.level})` : ''}">
+                 data-accessible="${isAccessible}">
                 <span class="level-num">${toMyanmarNumber(tutorial.level)}</span>
                 <span class="level-title">${tutorial.title}</span>
                 ${isCompleted ? '✓' : ''}
@@ -73,11 +73,19 @@ function renderLevelList(tutorials) {
             </div>
         `;
     }).join('');
+    
+    levelList.querySelectorAll('.level-item').forEach(item => {
+        item.addEventListener('click', function() {
+            if (this.dataset.accessible === 'true') {
+                selectLevel(parseInt(this.dataset.level));
+            }
+        });
+    });
 }
 
 async function selectLevel(level) {
     if (level > currentLevel) {
-        alert('ယခင်အဆင့်များကို ပြီးမြောက်ပါ!');
+        showNotification('ယခင်အဆင့်များကို ပြီးမြောက်ပါ!');
         return;
     }
     
@@ -92,7 +100,11 @@ async function selectLevel(level) {
     });
     
     try {
-        const response = await fetch(`/api/tutorial/${level}`);
+        const validLevel = parseInt(level);
+        if (isNaN(validLevel) || validLevel < 1 || validLevel > 10) {
+            throw new Error('Invalid level');
+        }
+        const response = await fetch(`/api/tutorial/${validLevel}`);
         const data = await response.json();
         if (data.success) {
             const tutorial = data.tutorial;
@@ -286,12 +298,16 @@ async function finishPractice(inputText, targetText) {
 
 function showResult(wpm, accuracy, score) {
     const practiceTextDiv = document.getElementById('practiceText');
+    const safeWpm = parseInt(wpm) || 0;
+    const safeAccuracy = parseInt(accuracy) || 0;
+    const safeScore = parseInt(score) || 0;
+    
     practiceTextDiv.innerHTML = `
         <div style="text-align: center; padding: 20px;">
             <h3 style="color: #27ae60; margin-bottom: 15px;">လေ့ကျင့်ခန်း ပြီးမြောက်ပါပြီ!</h3>
-            <p>မှတ်ရန်မိနစ် - ${toMyanmarNumber(wpm)}</p>
-            <p>တိကျမှု - ${toMyanmarNumber(accuracy)}%</p>
-            <p style="font-size: 1.5rem; font-weight: bold; color: #3498db;">အမှတ် - ${toMyanmarNumber(score)}</p>
+            <p>မှတ်ရန်မိနစ် - ${toMyanmarNumber(safeWpm)}</p>
+            <p>တိကျမှု - ${toMyanmarNumber(safeAccuracy)}%</p>
+            <p style="font-size: 1.5rem; font-weight: bold; color: #3498db;">အမှတ် - ${toMyanmarNumber(safeScore)}</p>
         </div>
     `;
     
@@ -310,13 +326,17 @@ async function loadLeaderboard() {
         
         const list = document.getElementById('leaderboardList');
         if (data.success && data.leaderboard.length > 0) {
-            list.innerHTML = data.leaderboard.map((user, index) => `
-                <div class="leaderboard-item ${index < 3 ? 'top-three' : ''} ${user.name === userData?.name ? 'current-user' : ''}">
-                    <span class="rank">${toMyanmarNumber(index + 1)}</span>
-                    <span class="name">${user.name}</span>
-                    <span class="score">${toMyanmarNumber(user.total_score || 0)}</span>
-                </div>
-            `).join('');
+            list.innerHTML = data.leaderboard.map((user, index) => {
+                const safeName = String(user.name || '').replace(/[<>&"']/g, c => ({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;',"'":'&#39;'}[c]));
+                const safeScore = parseInt(user.total_score) || 0;
+                return `
+                    <div class="leaderboard-item ${index < 3 ? 'top-three' : ''} ${user.name === userData?.name ? 'current-user' : ''}">
+                        <span class="rank">${toMyanmarNumber(index + 1)}</span>
+                        <span class="name">${safeName}</span>
+                        <span class="score">${toMyanmarNumber(safeScore)}</span>
+                    </div>
+                `;
+            }).join('');
         } else {
             list.innerHTML = '<p class="no-data">အမှတ်များ မရှိသေးပါ</p>';
         }
@@ -333,6 +353,14 @@ function logout() {
         .catch(err => {
             window.location.href = '/';
         });
+}
+
+function showNotification(message) {
+    const notification = document.createElement('div');
+    notification.style.cssText = 'position:fixed;top:20px;right:20px;background:#e74c3c;color:white;padding:15px 20px;border-radius:5px;z-index:9999;box-shadow:0 2px 10px rgba(0,0,0,0.2)';
+    notification.textContent = message;
+    document.body.appendChild(notification);
+    setTimeout(() => notification.remove(), 3000);
 }
 
 document.addEventListener('DOMContentLoaded', init);

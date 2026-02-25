@@ -160,4 +160,4 @@ def check_level(level):
     return jsonify({"success": True, "can_access": can_access})
 
 if __name__ == "__main__":
-    app.run(debug=True, port=5001)
+    app.run(debug=os.environ.get("FLASK_DEBUG", "False").lower() == "true", port=5001)
